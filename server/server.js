@@ -7,12 +7,12 @@ app.use(cors())
 app.use(express.json())
 
 
-app.get ("/todos", (req, res) => {
+app.post ("/todos", (req, res) => {
     const { status, todo } = req.body 
 
     console.log("Status:", status, "Todo:", todo)
 
-    res.json({ status: status,  todo: todo })
+    res.json({ status, todo })
 })
 
 

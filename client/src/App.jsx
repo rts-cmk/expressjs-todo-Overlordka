@@ -1,9 +1,10 @@
 import { useEffect } from "react"
 import { useState } from "react"
+import "./App.sass"
 
 function App() {
 
-  const [status, setStatus] = useState(false)
+  const [status, setStatus] = useState("not done")
   const [todo, setTodo] = useState("")
   const [todos, setTodos] = useState([])
 
@@ -51,6 +52,20 @@ function App() {
     loadData()
   }
 
+  async function updateStatus(id, newStatus) {
+    const response = await fetch(`/todos/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ status: newStatus})
+    })
+
+    const updated = await response.json()
+
+    setTodos(todos.map(t => (t.id === id ? updated : t)))
+  }
+
 
   return (
     <>
@@ -61,18 +76,24 @@ function App() {
           onChange={e => setTodo(e.target.value)}
           placeholder="To Do"
         />
-        <input
-          type="checkbox"
-          checked={status}
-          onChange={e => setStatus(e.target.checked)}
-        />
+        <select value={status} onChange={e => setStatus(e.target.value)}>
+          <option value="not done">Not done</option>
+          <option value="in progress">In progress</option>
+          <option value="done">Done</option>
+        </select>
 
         <button onClick={sendRequest}>Send</button>
       </form>
       <ul>
         {todos.map(t => (
           <li key={t.id}>
-            {t.todo} - {t.status ? "done" : "not done"} <button onClick={() => deleteTodo(t.id)}>Delete</button>
+            {t.todo}
+            <select onChange={(e) => updateStatus(t.id, e.target.value)}>
+              <option value="not done">Not done</option>
+              <option value="in progress">In progress</option>
+              <option value="done">Done</option>
+            </select>
+            {t.status} <button onClick={() => deleteTodo(t.id)}>Delete</button>
           </li>
         ))}
       </ul>

@@ -5,7 +5,7 @@ import fs from "fs"
 let todos = JSON.parse(fs.readFileSync("todos.json", "utf8"));
 
 function saveTodos() {
-  fs.writeFileSync("todos.json", JSON.stringify(todos, null, 2));
+    fs.writeFileSync("todos.json", JSON.stringify(todos, null, 2));
 }
 
 const app = express()
@@ -15,11 +15,11 @@ app.use(cors())
 app.use(express.json())
 
 
-app.post ("/todos", (req, res) => {
-    const { status, todo } = req.body 
+app.post("/todos", (req, res) => {
+    const { status, todo } = req.body
 
     const newTodo = { id: Date.now(), "status": status, "todo": todo }
-    todos.push (newTodo)
+    todos.push(newTodo)
 
     saveTodos()
 
@@ -27,16 +27,30 @@ app.post ("/todos", (req, res) => {
 })
 
 app.get("/todos", (req, res) => {
-  res.json(todos)
+    res.json(todos)
 })
 
 app.delete("/todos/:id", (req, res) => {
     const id = Number(req.params.id)
 
     todos = todos.filter(t => t.id !== id)
-    res.json({ message: "Deleted", id})
+    res.json({ message: "Deleted", id })
 
     saveTodos()
+})
+
+app.put("/todos/:id", (req, res) => {
+    const id = Number(req.params.id)
+    const { status } = req.body
+
+    const todo = todos.find(t => t.id === id)
+    if (!todo) return res.status(404).json({ error: "Not found" })
+
+    todo.status = status
+
+    saveTodos() 
+
+    res.json(todo)
 })
 
 

@@ -1,22 +1,27 @@
 import cors from "cors"
 import express from "express"
+import fs from "fs"
+
+let todos = JSON.parse(fs.readFileSync("todos.json", "utf8"));
+
+function saveTodos() {
+  fs.writeFileSync("todos.json", JSON.stringify(todos, null, 2));
+}
+
 const app = express()
 const PORT = 3000
 
 app.use(cors())
 app.use(express.json())
 
-let todos = []
-let nextId = 1
-
 
 app.post ("/todos", (req, res) => {
     const { status, todo } = req.body 
 
-    const newTodo = { id: nextId++, "status": status, "todo": todo }
+    const newTodo = { id: Date.now(), "status": status, "todo": todo }
     todos.push (newTodo)
 
-    console.log(newTodo)
+    saveTodos()
 
     res.json(newTodo)
 })
@@ -30,6 +35,8 @@ app.delete("/todos/:id", (req, res) => {
 
     todos = todos.filter(t => t.id !== id)
     res.json({ message: "Deleted", id})
+
+    saveTodos()
 })
 
 

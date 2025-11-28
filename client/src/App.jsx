@@ -69,7 +69,7 @@ function App() {
 
   return (
     <>
-      <form>
+      <form className="form">
         <input
           type="text"
           value={todo}
@@ -82,18 +82,25 @@ function App() {
           <option value="done">Done</option>
         </select>
 
-        <button onClick={sendRequest}>Send</button>
+        <button onClick={sendRequest} className="send-btn">Send</button>
       </form>
-      <ul>
+      <ul className="ul">
         {todos.map(t => (
-          <li key={t.id}>
+          <li key={t.id} className="li">
             {t.todo}
-            <select onChange={(e) => updateStatus(t.id, e.target.value)}>
+            <section className="sec-progress">
+            <div className="castom-select-wrapper">
+
+            <select onChange={(e) => updateStatus(t.id, e.target.value)} className="hidden-select">
               <option value="not done">Not done</option>
               <option value="in progress">In progress</option>
               <option value="done">Done</option>
             </select>
-            {t.status} <button onClick={() => deleteTodo(t.id)}>Delete</button>
+
+            <div className="custom-select">{t.status}</div>
+            </div>
+            <button onClick={() => deleteTodo(t.id)} className="delete-btn">Delete</button>
+            </section>
           </li>
         ))}
       </ul>
